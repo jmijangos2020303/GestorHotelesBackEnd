@@ -9,25 +9,31 @@ function RegistrarHotel(req, res) {
     var cat = new Hotel()
 
     if(parametros.nombre ) {
-            cat.Nombre = parametros.nombre;
-            cat.Direccion = parametros.direccion;
-            cat.Descripcion = parametros.descripcion;
-            cat.idProp = user.sub;
-            Hotel.find({ nombre : parametros.nombre }, (err, catEncontrado) => {
-                if ( catEncontrado.length == 0 ) {
-
-                    cat.save((err, usuarioGuardado) => {
-                        if (err) return res.status(500)
-                            .send({ mensaje: 'Error en la peticion' });
-                        if(!usuarioGuardado) return res.status(500)
-                            .send({ mensaje: 'Error al agregar el Hotel'});
-                        
-                        return res.status(200).send({ Empresas: usuarioGuardado });
-                    });                 
-                } else {
-                    return res.status(500)
-                        .send({ mensaje: 'Este hotel ya existe en la base de datos ' });
-                }
+            Hotel.find({ nombre : parametros.nombre, idProp: user.sub}, (err, catEncontrado) => {
+             if ( catEncontrado.length > 0 ) {   
+                
+                return res.status(500)
+                .send({ mensaje: 'Este hotel ya existe en la base de datos ' });
+            
+            } else {
+                 
+                
+                     cat.nombre = parametros.nombre;
+                     cat.direccion = parametros.direccion;
+                     cat.descripcion = parametros.descripcion;
+                     cat.idProp = user.sub;
+                     
+                     cat.save((err, usuarioGuardado) => {
+                         if (err) return res.status(500)
+                             .send({ mensaje: 'Error en la peticion' });
+                         if(!usuarioGuardado) return res.status(500)
+                             .send({ mensaje: 'Error al agregar el Hotel'});
+                         
+                         return res.status(200).send({ Empresas: usuarioGuardado });
+                     }); 
+                
+                
+                    }
             })
     }
 }
